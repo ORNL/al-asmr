@@ -48,3 +48,5 @@ RUN dftbplus/utils/get_opt_externals
 RUN cd dftbplus/_build && CC=gcc CXX=g++ FC=gfortran cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=OFF -DWITH_API=OFF -DWITH_PYTHON=OFF .. && make install
 ENV LD_LIBRARY_PATH=/usr/local/lib:/opt/conda/lib:$LD_LIBRARY_PATH
 RUN pip install tensorboard
+RUN pip install scikit-learn
+RUN apt-get -y install vim

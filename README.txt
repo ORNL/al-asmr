@@ -1,6 +1,6 @@
 # README
 
-cd Docker
-docker build . -t activeml
+cd Docker && docker build . -t activeml && cd ..
 docker run -it activeml /bin/bash
-docker run -it activeml ./schnet.py
+docker run -it activeml python ./schnet.py
+docker run -it -v "$(pwd)"/Train:/workspace activeml /bin/bash

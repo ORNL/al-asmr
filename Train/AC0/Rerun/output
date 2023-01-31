@@ -1,0 +1,10 @@
+Parser version: 8
+
+--------------------------------------------------------------------------------
+Reading SK-files:
+Done.
+ERROR!
+-> Missing child: KPointsAndWeights
+Path: dftbplusinput/Hamiltonian/DFTB
+Line: 4-16 (File: dftb_in.hsd)
+
