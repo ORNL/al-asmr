@@ -1,0 +1,42 @@
+Geometry = GenFormat { 
+    <<< "geo_end.gen" 
+} 
+ 
+HamiltonianMaxAngularMomentum { 
+   C = p 
+   H = s 
+   } 
+Hamiltonian = DFTB{ 
+   Filling = Fermi{ 
+      Temperature = 1000.0 
+   } 
+   HCorrection = Damping{ 
+      Exponent = 4.0 
+   } 
+   HubbardDerivs = { 
+      C = -0.1492 
+      H = -0.1857 
+   } 
+   MaxAngularMomentum = { 
+      C = "p" 
+      H = "s" 
+   } 
+   MaxSCCIterations = 1000 
+   SCC = Yes 
+   SCCTorlerance = 1e-06 
+   SlaterKosterFiles = Type2FileNames{ 
+      Prefix = ./ 
+      Separator = "-" 
+      Suffix = ".skf" 
+   } 
+   ThidOrderFull = Yes 
+   } 
+Options { 
+   WriteResultsTag = Yes 
+} 
+ParserOptions { 
+   IgnoreUnprocessedNodes = Yes  
+} 
+Analysis { 
+   CalculateForces = Yes  
+} 

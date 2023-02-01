@@ -1,0 +1,98 @@
+|===============================================================================
+|
+|  DFTB+ development version (commit: 8b0cd778, base: 19.1)
+|
+|  Copyright (C) 2006 - 2020  DFTB+ developers group
+|
+|===============================================================================
+|
+|  When publishing results obtained with DFTB+, please cite the following
+|  reference:
+|
+|  * DFTB+, a software package for efficient approximate density functional
+|    theory based atomistic simulations, J. Chem. Phys. 152, 124101 (2020).
+|    [doi: 10.1063/1.5143190]
+|
+|  You should also cite additional publications crediting the parametrization
+|  data you use. Please consult the documentation of the SK-files for the
+|  references.
+|
+|===============================================================================
+
+Reading input file 'dftb_in.hsd'
+Parser version: 8
+
+--------------------------------------------------------------------------------
+Reading SK-files:
+Done.
+WARNING!
+-> The following 4 node(s) have been ignored by the parser:
+(1)
+Path: dftbplusinput/HamiltonianMaxAngularMomentum
+Line: 5-8 (File: dftb_in.hsd)
+(2)
+Path: dftbplusinput/Hamiltonian/DFTB/HubbardDerivs
+Line: 16-19 (File: dftb_in.hsd)
+(3)
+Path: dftbplusinput/Hamiltonian/DFTB/SCCTorlerance
+Line: 26-26 (File: dftb_in.hsd)
+(4)
+Path: dftbplusinput/Hamiltonian/DFTB/ThidOrderFull
+Line: 32-32 (File: dftb_in.hsd)
+
+
+
+Processed input in HSD format written to 'dftb_pin.hsd'
+
+Starting initialization...
+--------------------------------------------------------------------------------
+OpenMP threads:              1
+Chosen random seed:          1855501115
+Mode:                        Static calculation
+Self consistent charges:     Yes
+SCC-tolerance:                 0.100000E-04
+Max. scc iterations:                   1000
+Shell resolved Hubbard:      No
+Spin polarisation:           No
+Nr. of up electrons:            19.000000
+Nr. of down electrons:          19.000000
+Periodic boundaries:         No
+Electronic solver:           Relatively robust
+Mixer:                       Broyden mixer
+Mixing parameter:                  0.200000
+Maximal SCC-cycles:                    1000
+Nr. of chrg. vec. in memory:              0
+Electronic temperature:        0.100000E+04 H      0.272114E+05 eV
+Initial charges:             Set automatically (system chrg:   0.000E+00)
+Included shells:             C:  s, p
+                             H:  s
+Damped SCC                   Yes
+Damped species(s):           H                                                 
+Extra options:
+                             Mulliken analysis
+                             Force calculation
+Force type                   original
+
+--------------------------------------------------------------------------------
+
+***  Geometry step: 0
+
+ iSCC Total electronic   Diff electronic      SCC error    
+    1   -0.66365966E+01    0.00000000E+00    0.12906389E-03
+    2   -0.66365966E+01    0.36215457E-08    0.10324813E-03
+    3   -0.66365966E+01    0.14484234E-07    0.20056300E-07
+>> Charges saved for restart in charges.bin
+ 
+Total Energy:                       -6.7261746684 H         -183.0285 eV
+Extrapolated to 0:              -26346.3186614998 H      -716919.8073 eV
+Total Mermin free energy:       -52685.9111483312 H     -1433656.5860 eV
+Force related energy:           -52685.9111483312 H     -1433656.5860 eV
+ 
+--------------------------------------------------------------------------------
+DFTB+ running times                          cpu [s]             wall clock [s]
+--------------------------------------------------------------------------------
+SCC                                    +     0.02  ( 66.9%)      0.04  ( 74.8%)
+--------------------------------------------------------------------------------
+Missing                                +     0.01  ( 33.1%)      0.01  ( 25.2%)
+Total                                  =     0.03  (100.0%)      0.05  (100.0%)
+--------------------------------------------------------------------------------
