@@ -1,0 +1,35 @@
+set size square 0.9,0.9
+set origin 0,0.1
+set xtics font "Times-Roman, 24"
+set ytics font "Times-Roman, 24"
+set xlabel font "Times-Roman, 24"
+set ylabel font "Times-Roman, 24"
+
+#set xtics 1000
+#set xr[0:6000]
+#set yr[1.0:3.5]
+#set ytics 0.5
+
+#set ytics 2.0
+#set xr[1e-3:5.0e-1]
+#set yr[0:100]
+
+set key left top
+#set logscale xy
+#set format x "%.0E"
+#set format y "%.0E"
+
+#set terminal postscript eps color enhanced "Times-Roman,24"
+#set output "AL_woUQ.eps"
+#set linestyle 1 linetype 10 linewith 2
+f70(x)=1.53
+f60(x)=1.80
+fp(x)=(x>0.04 && x<0.28)? 257.397*x**1.46106 :1/0 #+- 28.84, 0.07656
+fd(x)=(x>0.05 && x<0.44)? 286.779*x**1.55309 :1/0#+- 9.92, 0.03271
+fg(x)=(x>0.055 && x<0.355)? 398.796*x**1.73764 :1/0#+- 22.69, 0.049
+f(x) = 2.638*exp(-0.000259293*x)+0.7423
+plot "ref.dat" u 5:(-$7) w l lc rgb "black" title "ref","ff0.dat" u 5:(-$7) w l title "AC0","ff1.dat" u 5:(-$7) w l title "AC1","ff2.dat" u 5:(-$7) w l title "AC2","ff2.dat" u 5:(-$7) w l title "AC3","ff9.dat" u 5:(-$7) w l title "AC9"
+
+pause -1
+
+
