@@ -1,0 +1,119 @@
+Parser version: 8
+
+--------------------------------------------------------------------------------
+***  Converting input from version  4 to version  8 ...
+WARNING!
+-> Keyword moved to Analysis block.
+Path: dftbplusinput/Options/CalculateForces
+Line: 62-62 (File: dftb_in.hsd)
+
+WARNING!
+-> Adding legacy step size for finite difference differentiation
+Path: dftbplusinput/Hamiltonian/DFTB/Differentiation
+
+WARNING!
+-> Using DFTB3 optimised default value for parameter s6
+Path: dftbplusinput/Hamiltonian/DFTB/Dispersion/DftD3/s6
+
+WARNING!
+-> Keyword renamed to 'Solver'.
+Path: dftbplusinput/Hamiltonian/DFTB/Eigensolver
+Line: 20-20 (File: dftb_in.hsd)
+
+***  Done.
+
+Reading SK-files:
+Done.
+WARNING!
+-> The following 6 node(s) have been ignored by the parser:
+(1)
+Path: dftbplusinput/Hamiltonian/DFTB/HubbardDerivs/N
+Line: 33-33 (File: dftb_in.hsd)
+(2)
+Path: dftbplusinput/Hamiltonian/DFTB/HubbardDerivs/O
+Line: 34-34 (File: dftb_in.hsd)
+(3)
+Path: dftbplusinput/Hamiltonian/DFTB/HubbardDerivs/S
+Line: 35-35 (File: dftb_in.hsd)
+(4)
+Path: dftbplusinput/Hamiltonian/DFTB/MaxAngularMomentum/N
+Line: 40-40 (File: dftb_in.hsd)
+(5)
+Path: dftbplusinput/Hamiltonian/DFTB/MaxAngularMomentum/O
+Line: 41-41 (File: dftb_in.hsd)
+(6)
+Path: dftbplusinput/Hamiltonian/DFTB/MaxAngularMomentum/S
+Line: 42-42 (File: dftb_in.hsd)
+
+
+
+Processed input in HSD format written to 'dftb_pin.hsd'
+
+Starting initialization...
+--------------------------------------------------------------------------------
+OpenMP threads:              1
+Chosen random seed:          1116618657
+Mode:                        Static calculation
+Self consistent charges:     Yes
+SCC-tolerance:                 0.100000E-05
+Max. scc iterations:                   1000
+Shell resolved Hubbard:      No
+Spin polarisation:           No
+Nr. of up electrons:            19.000000
+Nr. of down electrons:          19.000000
+Periodic boundaries:         Yes
+Electronic solver:           Relatively robust
+Mixer:                       Broyden mixer
+Mixing parameter:                  0.200000
+Maximal SCC-cycles:                    1000
+Nr. of chrg. vec. in memory:              0
+Electronic temperature:        0.316682E-02 H      0.861734E-01 eV
+Initial charges:             Set automatically (system chrg:   0.000E+00)
+Included shells:             C:  s, p
+                             H:  s
+K-points and weights:           1:  0.000000  0.000000  0.000000     1.000000
+ 
+K-points in absolute space:     1:  0.000000  0.000000  0.000000
+ 
+Using DFT-D3 dispersion corrections
+Full 3rd order correction    Yes
+Damped SCC                   Yes
+Damped species(s):           H                                                 
+Extra options:
+                             Mulliken analysis
+                             Force calculation
+Force type                   original
+ iSCC Total electronic   Diff electronic      SCC error    
+    1   -0.15174343E+02    0.00000000E+00    0.52718772E+00
+    2   -0.15022943E+02    0.15140043E+00    0.99929063E+00
+    3   -0.15095849E+02   -0.72905821E-01    0.85539268E+00
+    4   -0.15178285E+02   -0.82436623E-01    0.64939466E-01
+    5   -0.15178996E+02   -0.71052195E-03    0.24217107E-01
+    6   -0.15178934E+02    0.62097510E-04    0.21017435E-01
+    7   -0.15178926E+02    0.81232888E-05    0.22426618E-01
+    8   -0.15179024E+02   -0.98602789E-04    0.10531546E-02
+    9   -0.15179022E+02    0.21658525E-05    0.40984393E-02
+   10   -0.15179024E+02   -0.19753702E-05    0.11026331E-02
+   11   -0.15179025E+02   -0.60667344E-06    0.11713705E-03
+   12   -0.15179025E+02    0.10298962E-08    0.96241906E-04
+   13   -0.15179025E+02    0.15730711E-07    0.10809227E-04
+   14   -0.15179025E+02    0.49935718E-08    0.12012915E-04
+   15   -0.15179025E+02   -0.28698608E-08    0.11105442E-05
+   16   -0.15179025E+02   -0.52242655E-10    0.34900984E-06
+>> Charges saved for restart in charges.bin
+ 
+Total Energy:                      -15.3698633586 H         -418.2353 eV
+Extrapolated to 0:                 -15.3742523036 H         -418.3547 eV
+Total Mermin free energy:          -15.3786412487 H         -418.4741 eV
+Force related energy:              -15.3786412487 H         -418.4741 eV
+Volume:                              0.650493E+07 au^3   0.963932E+06 A^3
+Pressure:                           -0.878804E-08 au    -0.258553E+06 Pa
+ 
+--------------------------------------------------------------------------------
+DFTB+ running times                          cpu [s]             wall clock [s]
+--------------------------------------------------------------------------------
+SCC                                    +     0.02  ( 66.2%)      0.02  ( 66.8%)
+--------------------------------------------------------------------------------
+Missing                                +     0.01  ( 33.8%)      0.01  ( 33.2%)
+Total                                  =     0.04  (100.0%)      0.04  (100.0%)
+--------------------------------------------------------------------------------

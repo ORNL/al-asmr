@@ -1,0 +1,50 @@
+units           metal
+dimension       3
+boundary        p p p 
+atom_style      charge
+atom_modify     sort 0 0.0    # turn off sorting of the coordinates
+read_data       molani.data
+
+# initialize system
+
+velocity	all create 10.0 87287 loop geom
+
+pair_style      zero 1.0
+pair_coeff	* *  
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+variable	dt equal 0.0005
+timestep        ${dt}
+
+
+fix             integ   all nve
+#fix             2 all dftbp dftb_in.hsd NULL
+python          post_force_callback file pyase_dftb.py
+fix             2 all python/torch 1 post_force post_force_callback
+fix_modify      2 energy yes
+
+
+thermo      	100
+thermo_style 	custom step temp ke pe press pxx pyy pzz lx ly xy
+thermo_modify   norm no flush yes
+################# ENERGY MINIZATION ###################################
+#fix	        emin all box/relax x 0.0 y 0.0
+min_style       cg
+min_modify      dmax 0.2
+min_modify      line quadratic
+#minimize        0.0 1.0e-8 2000 10000
+#unfix		emin
+
+variable        e0 equal f_2[1]
+variable        e1 equal f_2[2]
+variable        e2 equal f_2[3]
+variable        vir0 equal f_2[4]
+variable        vir1 equal f_2[5]
+variable        vir2 equal f_2[6]
+variable        vir3 equal f_2[7]
+variable        vir4 equal f_2[8]
+variable        vir5 equal f_2[9]
+
+#fix              def1 all print 1 "${p1} ${p2} ${p3} ${p4} ${p5} ${p6}" file sscurve.dat screen no

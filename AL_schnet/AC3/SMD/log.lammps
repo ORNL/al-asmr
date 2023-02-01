@@ -1,0 +1,46 @@
+LAMMPS (29 Oct 2020)
+units           metal
+dimension       3
+boundary        p p p
+atom_style      charge
+atom_modify     sort 0 0.0    # turn off sorting of the coordinates
+read_data       molani.data
+Reading data file ...
+  orthogonal box = (0.0000000 0.0000000 0.0000000) to (100.00000 100.00000 100.00000)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  20 atoms
+  read_data CPU = 0.002 seconds
+
+# initialize system
+
+velocity	all create 10.0 87287 loop geom
+
+pair_style      zero 1.0
+pair_coeff	* *
+
+#neighbor        1.0 bin
+#neigh_modify    every 1 delay 0 check yes
+
+displace_atoms all move 50 50 50
+Displacing atoms ...
+variable	dt equal 0.0005
+timestep        ${dt}
+timestep        0.0005
+dump		equil all xyz 100 equil.xyz
+dump_modify     equil element H He Li Be B C N O
+
+
+group		refc id 17
+1 atoms in group refc
+group		refh id 10
+1 atoms in group refh
+group		mobile subtract all refc refh
+18 atoms in group mobile
+
+
+fix             integ   all nve
+#python          post_force_callback file pyase_sch.py
+python          post_force_callback file sch.py
+ERROR: Could not process Python file (../python_impl.cpp:218)
+Last command: python          post_force_callback file sch.py

@@ -1,0 +1,75 @@
+units           metal
+dimension       3
+boundary        p p p 
+atom_style      charge
+atom_modify     sort 0 0.0    # turn off sorting of the coordinates
+read_data       molani.data
+
+# initialize system
+
+velocity	all create 10.0 87287 loop geom
+
+pair_style      zero 1.0
+pair_coeff	* *  
+
+#neighbor        1.0 bin
+#neigh_modify    every 1 delay 0 check yes
+
+displace_atoms all move 50 50 50
+variable	dt equal 0.0005
+timestep        ${dt}
+dump		equil all xyz 100 equil.xyz
+dump_modify     equil element H He Li Be B C N O
+
+
+group		refc id 17
+group		refh id 10
+group		mobile subtract all refc refh
+
+
+fix             integ   all nve
+#python          post_force_callback file pyase_sch.py
+python          post_force_callback file sch.py
+fix             2 all python/torch 1 post_force post_force_callback
+fix_modify      2 energy yes
+
+fix             therm   mobile langevin  10.0 10.0  0.1 699483
+fix	        moment  all momentum 100 linear 1 1 1 angular
+
+thermo      	100
+thermo_style 	custom step temp ke pe press pxx pyy pzz xlo xhi ylo yhi 
+thermo_modify   norm no flush yes
+
+run 		1000
+unfix		therm
+unfix		moment
+fix             therm mobile temp/berendsen  10.0 10.0 0.1
+run		1000
+
+run		0
+undump		equil
+dump		vmd all xyz 1 vmd.xyz
+dump_modify     vmd element H He Li Be B C N O
+
+reset_timestep   0
+
+fix		 stretch refc smd cvel 10.0 1.0 couple refh auto auto auto 0.0
+
+variable 	 p1 equal "f_stretch[1]"
+variable 	 p2 equal "f_stretch[2]"
+variable 	 p3 equal "f_stretch[3]"
+variable 	 p4 equal "f_stretch[4]"
+variable 	 p5 equal "f_stretch[5]"
+variable 	 p6 equal "f_stretch[6]"
+variable 	 p7 equal "f_stretch[7]"
+variable	 p8 equal "pe"
+
+
+fix		def all print 1 "${p1} ${p2} ${p3} ${p4} ${p5} ${p6} ${p7} ${p8}" file ff.dat screen no
+
+#dump	        1 all cfg 20 opt_*.cfg mass type xs ys zs q fx fy fz
+#dump_modify     1 element H He Li Be B C N O
+
+
+run		7000
+
