@@ -1,0 +1,99 @@
+LAMMPS (29 Oct 2020)
+units           metal
+dimension       3
+boundary        p p p
+atom_style      charge
+atom_modify     sort 0 0.0    # turn off sorting of the coordinates
+read_data       molani.data
+Reading data file ...
+  orthogonal box = (0.0000000 0.0000000 0.0000000) to (98.380486 97.980003 100.00000)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  20 atoms
+  read_data CPU = 0.000 seconds
+
+# initialize system
+
+velocity	all create 10.0 87287 loop geom
+
+pair_style      zero 1.0
+pair_coeff	* *
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+variable	dt equal 0.0005
+timestep        ${dt}
+timestep        0.0005
+
+
+fix             integ   all nve
+fix             2 all dftbp dftb_in.hsd NULL
+fix_modify      2 energy yes
+#fix             therm   all langevin  10.0 10.0  0.1 699483
+#fix	        moment  all momentum 100 linear 1 1 1 angular
+
+thermo      	100
+thermo_style 	custom step temp ke pe press pxx pyy pzz lx ly xy
+thermo_modify   norm no flush yes
+################# ENERGY MINIZATION ###################################
+#fix	        emin all box/relax x 0.0 y 0.0
+min_style       cg
+min_modify      dmax 0.2
+min_modify      line quadratic
+#minimize        0.0 1.0e-8 2000 10000
+#unfix		emin
+
+variable        e0 equal f_2[1]
+variable        e1 equal f_2[2]
+variable        e2 equal f_2[3]
+variable        vir0 equal f_2[4]
+variable        vir1 equal f_2[5]
+variable        vir2 equal f_2[6]
+variable        vir3 equal f_2[7]
+variable        vir4 equal f_2[8]
+variable        vir5 equal f_2[9]
+
+#fix              def1 all print 1 "${p1} ${p2} ${p3} ${p4} ${p5} ${p6}" file sscurve.dat screen no
+run 0
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 2
+  ghost atom cutoff = 2
+  binsize = 1, bins = 99 98 100
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair zero, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d/newton
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 7.470 | 7.470 | 7.470 Mbytes
+Step Temp KinEng PotEng Press Pxx Pyy Pzz Lx Ly Xy 
+       0           10  0.024559428   -418.47412   -2.5583146   -8.6438143    1.7568523  -0.78798176    98.380486    97.980003            0 
+Loop time of 1.19209e-06 on 1 procs for 0 steps with 20 atoms
+
+167.8% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 1.192e-06  |            |       |100.00
+
+Nlocal:        20.0000 ave          20 max          20 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:        0.00000 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:        28.0000 ave          28 max          28 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 28
+Ave neighs/atom = 1.4000000
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:00

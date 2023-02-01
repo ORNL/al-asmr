@@ -7,6 +7,16 @@ HamiltonianMaxAngularMomentum {
    H = s 
    } 
 Hamiltonian = DFTB{ 
+   Filling = Fermi{ 
+      Temperature = 1000.0 
+   } 
+   HCorrection = Damping{ 
+      Exponent = 4.0 
+   } 
+   HubbardDerivs = { 
+      C = -0.1492 
+      H = -0.1857 
+   } 
    MaxAngularMomentum = { 
       C = "p" 
       H = "s" 
@@ -18,11 +28,11 @@ Hamiltonian = DFTB{
       Prefix = ./ 
       Separator = "-" 
       Suffix = ".skf" 
-      } 
+   } 
+   ThidOrderFull = Yes 
    } 
 Options { 
    WriteResultsTag = Yes 
-   temperature = 1000.0 
 } 
 ParserOptions { 
    IgnoreUnprocessedNodes = Yes  

@@ -1,0 +1,56 @@
+Geometry = GenFormat {
+  <<< "geo_end.gen"
+}
+
+
+Driver = {}
+
+
+Hamiltonian = DFTB {
+  HCorrection = Damping{
+    Exponent = 4.00
+  }
+
+
+  SCC = Yes
+  MaxSCCIterations = 1000
+
+  Filling = Fermi {
+    Temperature [Kelvin] = 1000
+  }  
+  SCCTolerance = 1e-6
+  ThirdOrderFull = Yes
+  HubbardDerivs {
+    H  = -0.1857
+    C  = -0.1492
+  }
+  MaxAngularMomentum = {
+    H  = "s"
+    C  = "p"
+  }
+  SlaterKosterFiles = Type2Filenames{
+    Prefix = "/home/8gj/applic/utils/dftb/3ob/3ob-3-1/"
+    Suffix = ".skf"
+    Separator = "-" 
+    LowerCaseTypeName = No
+  }
+  KPointsAndWeights = SuperCellFolding {
+    1 0 0
+    0 1 0
+    0 0 1
+    0.0 0.0 0.0
+ }
+
+
+}
+
+Options = {
+  WriteAutotestTag = Yes
+  CalculateForces = Yes
+}
+
+
+ParserOptions {
+  ParserVersion = 4
+  IgnoreUnprocessedNodes = Yes
+}

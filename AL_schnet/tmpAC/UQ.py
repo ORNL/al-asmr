@@ -1,4 +1,4 @@
-import os,math
+import sys,os,math
 import h5py
 import torch
 import torchani
@@ -1317,7 +1317,7 @@ def UQSch(filehead,nmodels,sig,maxnum,datanum):
         tenergy=[]
         tforces=[]
         #tenergy =np.empty(shape=[0])
-        for i in range(0,5):
+        for i in range(0,nmodels):
             # move batch to GPU, if necessary
             batch = {k: v.to(device) for k, v in batch.items()}
             #print(batch.keys())
@@ -1694,7 +1694,7 @@ def UQSch(filehead,nmodels,sig,maxnum,datanum):
     #Grid
 
     #dE = 1.0/hartree2kcalmol # Energy cut for Total # of atoms, eV
-    dE = 1.0/hartree2kcalmol(1.0) # Energy cut for Total # of atoms, 1 kcal/mol
+    dE = 1.0 # Energy cut for Total # of atoms, 1 kcal/mol
     dr = 0.01
     #pe,dist =ReadFF('ff.dat')
     #print("FF data #",len(pe),len(dist))
@@ -1720,7 +1720,7 @@ def UQSch(filehead,nmodels,sig,maxnum,datanum):
         tdist = Dist(ref_coords[i],9,16)
         pe = exp_en[i].item()
         if(sel_mask[i]):
-            selout+=str(tdist)+" "+str(pe) +" "+ str(pe+1)+"\n"
+            selout+=str(tdist)+" "+str(pe) +" "+ str(pe+10)+"\n"
         else:
             selout+=str(tdist)+" "+str(pe) +" "+str(pe)+"\n"        
 

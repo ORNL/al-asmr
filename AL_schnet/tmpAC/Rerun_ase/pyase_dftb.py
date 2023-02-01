@@ -56,19 +56,19 @@ def post_force_callback(lmp, v, m):
   #print(model)
   calc = Dftb(Hamiltonian_ = 'DFTB',
               Hamiltonian_SCC='Yes',
-              Hamiltonian_SCCTorlerance = 1e-6,
+              Hamiltonian_SCCTolerance = 1e-6,
               Hamiltonian_MaxSCCIterations = 1000,
               HamiltonianMaxAngularMomentum_='',              
               HamiltonianMaxAngularMomentum_H='s',
               HamiltonianMaxAngularMomentum_C='p',
               Hamiltonian_HCorrection_='Damping',
               Hamiltonian_HCorrection_Exponent=4.00,
-              Hamiltonian_ThidOrderFull ='Yes',
-              Hamiltonian_HubbardDevs_ ='',
-              Hamiltonian_HubbardDevs_H =-0.1857,
-              Hamiltonian_HubbardDevs_C =-0.1492,              
+              Hamiltonian_ThirdOrderFull ='Yes',
+              Hamiltonian_HubbardDerivs_ ='',
+              Hamiltonian_HubbardDerivs_H =-0.1857,
+              Hamiltonian_HubbardDerivs_C =-0.1492,              
               Hamiltonian_Filling_ ='Fermi',
-              Hamiltonian_Filling_FermiTemperature = 1000.0)
+              Hamiltonian_Filling_Temperature = 0.0032)
   model.calc = calc
 
   energy = model.get_potential_energy()

@@ -98,8 +98,8 @@ gra = Gra.Graphene(8,12)
 hdfcoordinates,hdfforces,hdfcell,hdfenergies,hdfspecies,hdfvirial = ReadHDF5('selected.h5',0)
 
 
-#for i in range(0,len(hdfcell)):
-for i in range(0,1):
+for i in range(0,len(hdfcell)):
+#for i in range(0,1):
     tmpcoords = hdfcoordinates[i]
     tmpcell = hdfcell[i]
 
@@ -109,7 +109,7 @@ for i in range(0,1):
 
     print("########################## %d #######################################" %i)
     lmp = lammps()
-    lmp.file("rerun_dftb.in")
+    lmp.file("rerun.in")
 
     lmp.command("run 0")
 

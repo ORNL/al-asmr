@@ -7,7 +7,9 @@ from numpy import linalg as LA
 import argparse
 
 #export MKL_THREADING_LAYER=1
-#python active.py --enum=5 --ACnum=10 --nboost=3 --sig=3.0 --maxnum=50 
+#export ASE_DFTB_COMMAD="dftb+ > PREFIX.out"
+#python active.py --enum=5 --ACnum=10 --nboost=3 --sig=3.0 --maxnum=50
+
 #Parse
 parser = argparse.ArgumentParser(description='Active Learning with Steered Molecular Dynamics')
 parser.add_argument('--enum',type=int,default=5)
@@ -30,7 +32,7 @@ print("# of ensembles: ",nensem)
 print("# of total AC run: ",nAC)
 print("# of boosting: ", nboost)
 print("Value of sigma: ", sig)
-os.system("python boost.py "+str(nboost))
+
 
 os.chdir('DataSplit')
 itrain = True

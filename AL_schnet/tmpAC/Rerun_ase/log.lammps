@@ -10,7 +10,7 @@ Reading data file ...
   1 by 1 by 1 MPI processor grid
   reading atoms ...
   20 atoms
-  read_data CPU = 0.000 seconds
+  read_data CPU = 0.001 seconds
 
 # initialize system
 
@@ -71,10 +71,10 @@ Neighbor list info ...
       bin: standard
 Per MPI rank memory allocation (min/avg/max) = 7.470 | 7.470 | 7.470 Mbytes
 Step Temp KinEng PotEng Press Pxx Pyy Pzz Lx Ly Xy 
-       0           10  0.024559428   -423.89551  0.027213909  0.027644047  0.027270982  0.026726698    98.380486    97.980003            0 
-Loop time of 3.57628e-06 on 1 procs for 0 steps with 20 atoms
+       0           10  0.024559428   -183.02854  0.027213909  0.027607213  0.025987657  0.028046856    98.380486    97.980003            0 
+Loop time of 4.76837e-06 on 1 procs for 0 steps with 20 atoms
 
-139.8% CPU use with 1 MPI tasks x no OpenMP threads
+104.9% CPU use with 1 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
@@ -84,17 +84,17 @@ Neigh   | 0          | 0          | 0          |   0.0 |  0.00
 Comm    | 0          | 0          | 0          |   0.0 |  0.00
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 3.576e-06  |            |       |100.00
+Other   |            | 4.768e-06  |            |       |100.00
 
 Nlocal:        20.0000 ave          20 max          20 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:        0.00000 ave           0 max           0 min
+Nghost:        88.0000 ave          88 max          88 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:        29.0000 ave          29 max          29 min
+Neighs:        28.0000 ave          28 max          28 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 29
-Ave neighs/atom = 1.4500000
+Total # of neighbors = 28
+Ave neighs/atom = 1.4000000
 Neighbor list builds = 0
 Dangerous builds = 0
 Total wall time: 0:00:00

@@ -211,7 +211,8 @@ forces=np.empty(shape=[0,natoms,3])
 
 
 #Boost up with the coordinate noise
-boostnum=3
+boostnum=1
+if(len(sys.argv)==2):boostnum=int(sys.argv[1])
 eps = [0.05,0.05,0.05] # Angstrom max-min: 0.2
 ex=eps[0]
 ey=eps[1]
