@@ -10,7 +10,7 @@ Reading data file ...
   1 by 1 by 1 MPI processor grid
   reading atoms ...
   20 atoms
-  read_data CPU = 0.015 seconds
+  read_data CPU = 0.003 seconds
 
 # initialize system
 
