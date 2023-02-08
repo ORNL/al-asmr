@@ -22,7 +22,8 @@ ev2hartree = np.float64(1.0/hartree2ev)
 
 # helper function to convert energy unit from Hartree to kcal/mol
 #device = torch.device('cpu')
-device = torch.device('cuda:0')
+#device = torch.device('cuda:0')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 batch_size = 100
 
 def ChangeSpecies(filein,fileout):
