@@ -27,7 +27,7 @@ for i in range(0,10):
     pe,tdist=ReadFF('ff'+str(i)+'.dat')
     pe=np.array(pe[:ndata])
     tmae = MAE(pe_ref,pe)
-    out=str(i)+" "+str(tmae)+"\n"
+    out+=str(i)+" "+str(tmae)+"\n"
 
 f=open('summary.dat','w')
 f.write(out)
