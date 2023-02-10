@@ -1,6 +1,8 @@
 
 import schnetpack as spk
 import os
+import sys
+import time
 
 forcetut = './forcetut'
 if not os.path.exists(forcetut):
@@ -8,6 +10,12 @@ if not os.path.exists(forcetut):
 
 from schnetpack.datasets import MD17
 
+import argparse
+
+#Parse
+parser = argparse.ArgumentParser(description='Schnet Training')
+parser.add_argument('--nepoch',type=int,default=300)
+args = parser.parse_args()
 
 train = MD17(os.path.join('train.db'))
 val = MD17(os.path.join('validation.db'))
@@ -85,6 +93,104 @@ os.system('rm ./forcetut/best_model')
 
 import schnetpack.train as trn
 
+## Hook for both CSV and screen
+class MyHook(trn.LoggingHook):
+    def __init__(
+            self,
+            log_path,
+            metrics,
+            log_train_loss=True,
+            log_validation_loss=True,
+            log_learning_rate=True,
+            every_n_epochs=1,
+        ):    
+        log_path = os.path.join(log_path, "log.csv")
+        super(MyHook, self).__init__(
+            log_path, metrics, log_train_loss, log_validation_loss, log_learning_rate
+        )
+        self._offset = 0
+        self._restart = False
+        self.every_n_epochs = every_n_epochs
+
+    def on_train_begin(self, trainer):
+        if os.path.exists(self.log_path):
+            remove_file = False
+            with open(self.log_path, "r") as f:
+                # Ensure there is one entry apart from header
+                lines = f.readlines()
+                if len(lines) > 1:
+                    self._offset = float(lines[-1].split(",")[0]) - time.time()
+                    self._restart = True
+                else:
+                    remove_file = True
+
+            # Empty up to header, remove to avoid adding header twice
+            if remove_file:
+                os.remove(self.log_path)
+        else:
+            self._offset = -time.time()
+            # Create the log dir if it does not exists, since write cannot
+            # create a full path
+            log_dir = os.path.dirname(self.log_path)
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+
+        if not self._restart:
+            log = ""
+            log += "Time"
+
+            if self.log_learning_rate:
+                log += ",Learning rate"
+
+            if self.log_train_loss:
+                log += ",Train loss"
+
+            if self.log_validation_loss:
+                log += ",Validation loss"
+
+            if len(self.metrics) > 0:
+                log += ","
+
+            for i, metric in enumerate(self.metrics):
+                log += str(metric.name)
+                if i < len(self.metrics) - 1:
+                    log += ","
+
+            with open(self.log_path, "a+") as f:
+                f.write(log + os.linesep)
+
+    def on_validation_end(self, trainer, val_loss):
+        if trainer.epoch % self.every_n_epochs == 0:
+            ctime = time.time() + self._offset
+            log = str(ctime)
+
+            if self.log_learning_rate:
+                log += "," + str(trainer.optimizer.param_groups[0]["lr"])
+
+            if self.log_train_loss:
+                log += "," + str(self._train_loss / self._counter)
+
+            if self.log_validation_loss:
+                log += "," + str(val_loss)
+
+            if len(self.metrics) > 0:
+                log += ","
+
+            for i, metric in enumerate(self.metrics):
+                m = metric.aggregate()
+                if hasattr(m, "__iter__"):
+                    log += ",".join([str(j) for j in m])
+                else:
+                    log += str(m)
+                if i < len(self.metrics) - 1:
+                    log += ","
+
+            with open(self.log_path, "a") as f:
+                f.write(log + os.linesep)
+            
+            print (log)
+
+
 # set up metrics
 metrics = [
     spk.metrics.MeanAbsoluteError(MD17.energy),
@@ -93,7 +199,8 @@ metrics = [
 
 # construct hooks
 hooks = [
-    trn.CSVHook(log_path=forcetut, metrics=metrics), 
+    # trn.CSVHook(log_path=forcetut, metrics=metrics), 
+    MyHook(log_path=forcetut, metrics=metrics),
     trn.ReduceLROnPlateauHook(
         optimizer, 
         patience=5, factor=0.8, min_lr=1e-6,
@@ -120,7 +227,7 @@ else:
 
 #device=torch.device('cuda:1')
 # determine number of epochs and train
-n_epochs = 300
+n_epochs = args.nepoch
 trainer.train(device=device, n_epochs=n_epochs)
 
 import numpy as np
