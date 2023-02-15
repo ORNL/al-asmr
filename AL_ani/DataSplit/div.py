@@ -119,7 +119,7 @@ def CheckHDF5(filename):
 
 #flist = ['Rd10.0','Sel10.0']
 #flist = ['Rd','Sel','Sel1','Sel2','Sel3','Sel4','Sel5','Sel6']
-flist = ['Ref','AC0','AC1','AC2','AC3','AC4','AC5','AC6']
+flist = ['Ref','AC0','AC1','AC2','AC3','AC4','AC5','AC6','AC7','AC8','AC9','AC10']
 #flist =['NVT500K','SMD10K']
 
 #flist = ['AC1']
