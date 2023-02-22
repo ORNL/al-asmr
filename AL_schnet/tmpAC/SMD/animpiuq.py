@@ -144,13 +144,13 @@ def post_force_callback(lmp, v, m):
 
         #Shifted based on atom type
         zeros=np.zeros(np.shape(euq))        
-        hmask = np.ma.masked_where(atype==6,euq) #Remove type =6
-        cmask = np.ma.masked_where(atype==1,euq) #Remove type =1
+        hmask = np.ma.masked_where(atype[:nlocal,:]==6,euq) #Remove type =6
+        cmask = np.ma.masked_where(atype[:nlocal,:]==1,euq) #Remove type =1
         
         cmean = cmask.min()
         hmean = hmask.min()        
-        hshift = np.ma.filled(np.ma.masked_where(atype==1,zeros),fill_value=hmean) #Remove type =1
-        cshift = np.ma.filled(np.ma.masked_where(atype==6,zeros),fill_value=cmean) #Remove type =6    
+        hshift = np.ma.filled(np.ma.masked_where(atype[:nlocal,:]==1,zeros),fill_value=hmean) #Remove type =1
+        cshift = np.ma.filled(np.ma.masked_where(atype[:nlocal,:]==6,zeros),fill_value=cmean) #Remove type =6    
         nuq = euq -hshift-cshift
         q[:]=nuq[:]
         #print(q)
