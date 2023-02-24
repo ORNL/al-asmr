@@ -1804,7 +1804,7 @@ nensem=5
 maxnum=50
 
 if(len(sys.argv)==4):
-    sig=int(sys.argv[1])
+    sig=float(sys.argv[1])
     nensem=int(sys.argv[2])
     maxnum=int(sys.argv[3])        
     
