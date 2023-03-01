@@ -28,7 +28,7 @@ fp(x)=(x>0.04 && x<0.28)? 257.397*x**1.46106 :1/0 #+- 28.84, 0.07656
 fd(x)=(x>0.05 && x<0.44)? 286.779*x**1.55309 :1/0#+- 9.92, 0.03271
 fg(x)=(x>0.055 && x<0.355)? 398.796*x**1.73764 :1/0#+- 22.69, 0.049
 f(x) = 2.638*exp(-0.000259293*x)+0.7423
-plot "ref.dat" u 5:(-$7) w l lc rgb "black" title "ref","ff0.dat" u 5:(-$7) w l title "AC0","ff1.dat" u 5:(-$7) w l title "AC1","ff2.dat" u 5:(-$7) w l title "AC2","ff3.dat" u 5:(-$7) w l title "AC3","ff4.dat" u 5:(-$7) w l title "AC4","ff9.dat" u 5:(-$7) w l title "AC9"
+plot "ref.dat" u 5:(-$7) w l lc rgb "black" title "ref","ff0.dat" u 5:(-$7) w l title "AC0","ff1.dat" u 5:(-$7) w l title "AC1","ff2.dat" u 5:(-$7) w l title "AC2","ff3.dat" u 5:(-$7) w l title "AC3","ff4.dat" u 5:(-$7) w l title "AC4","ff5.dat" u 5:(-$7) w l title "AC5","ff6.dat" u 5:(-$7) w l title "AC6","ff7.dat" u 5:(-$7) w l title "AC7","ff8.dat" u 5:(-$7) w l title "AC8","ff9.dat" u 5:(-$7) w l title "AC9"
 
 pause -1
 
