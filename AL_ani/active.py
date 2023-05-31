@@ -27,12 +27,15 @@ class mos:
 
 #Parse
 parser = argparse.ArgumentParser(description='Active Learning with Steered Molecular Dynamics')
-parser.add_argument('--enum',type=int,default=5)
+parser.add_argument('--enum',type=int,default=3)
 parser.add_argument('--ACnum',type=int,default=10)
-parser.add_argument('--nboost',type=int,default=1)
+parser.add_argument('--nboost',type=int,default=3)
 parser.add_argument('--sig',type=float,default=3.0)
 parser.add_argument('--maxnum',type=int,default=50)
 parser.add_argument('--nepoch',type=int,default=300) ## set nepoch for NNP training
+parser.add_argument('--restarti',type=int,default=0) ## set initial i (AC#)
+
+
 #parser.add_argument('--navg',type=int,default=1000) #of data for mean and std
 
 args = parser.parse_args()
@@ -42,6 +45,7 @@ nAC = args.ACnum
 nboost=args.nboost
 sig=args.sig
 maxnum=args.maxnum
+restarti=args.restarti
 
 print("Input Check...")
 print("# of ensembles: ",nensem)
@@ -52,9 +56,14 @@ print("# of epochs for training: ", args.nepoch)
 
 mos.chdir('DataSplit')
 itrain = True
-mos.system('rm AC*/data.h5', exit_on_error=False)
-for i in range(0,nAC):
-    #Training
+if(restarti!=0):
+    itrain = False
+
+if(itrain==True):
+    mos.system('rm AC*/data.h5', exit_on_error=False)
+
+
+for i in range(restarti,nAC):
     for j in range(0,nensem):
         mos.system("pwd")        
         print("Model Training in Ac %d loop and %d model"%(i,j))
@@ -66,7 +75,7 @@ for i in range(0,nAC):
         com = "cp ../tmptrain "+dirname+" -rf"
         mos.system(com)        
 
-        com="python div.py "+str(i+1)
+        com="python comdiv.py "+str(i+1)
         mos.system(com)
 
         com="cp *.h5 "+dirname
@@ -95,9 +104,15 @@ for i in range(0,nAC):
     mos.system("mv ../best*.pt .")
     mos.system("mv ../train* . ")
 
+    #Select Best model
+    mos.system("python Sel.py "+str(nensem))    
+    
     #in the SMD directory
     mos.chdir("SMD")
-    mos.system("cp ../best*.pt .")
+    #mos.system("cp ../best*.pt .")
+    mos.system("cp ../bestbest.pt best0.pt")    
+
+
     mos.system("python run.py")
     mos.system("cp vmd.xyz ../")
     mos.system("cp ff.dat ../")
