@@ -128,9 +128,11 @@ if __name__ == "__main__":
             com="cd %s; ln -snf train%d/force-training-best.pt best%d.pt"%(dirname, j, j)
             mos.system(com)
         
+        #Select Best model
         com="cd %s; python Sel.py %d"%(dirname, nensem)
         mos.system(com, wrapcmd=wrapcmd)
 
+        #in the SMD directory
         com="cd %s/SMD; cp ../bestbest.pt best0.pt"%(dirname)
         mos.system(com)
 
@@ -146,7 +148,8 @@ if __name__ == "__main__":
         com="cd %s/SMD; cp ff.dat ../../ff%d.dat"%(dirname, i)
         mos.system(com)
 
-        com="cd %s/SMD; python xyz2h5.py"%(dirname)
+        #UQ
+        com="cd %s; python xyz2h5.py"%(dirname)
         mos.system(com, wrapcmd=wrapcmd)
 
         com="cd %s; python UQ.py %f %d %d"%(dirname, sig, nensem, maxnum)
