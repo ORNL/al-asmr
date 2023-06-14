@@ -136,7 +136,16 @@ if __name__ == "__main__":
         com="cd %s/SMD; python run.py"%(dirname)
         mos.system(com, wrapcmd=wrapcmd)
 
-        com="cd %s; python xyz2h5.py"%(dirname)
+        com="cd %s/SMD; cp vmd.xyz ../"%(dirname)
+        mos.system(com)
+
+        com="cd %s/SMD; cp ff.dat ../"%(dirname)
+        mos.system(com)
+
+        com="cd %s/SMD; cp ff.dat ../../ff%d.dat"%(dirname, i)
+        mos.system(com)
+
+        com="cd %s/SMD; python xyz2h5.py"%(dirname)
         mos.system(com, wrapcmd=wrapcmd)
 
         com="cd %s; python UQ.py %f %d %d"%(dirname, sig, nensem, maxnum)
