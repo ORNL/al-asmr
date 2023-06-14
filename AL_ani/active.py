@@ -100,7 +100,8 @@ if __name__ == "__main__":
     if(itrain==True):
         mos.system('rm AC*/data.h5', exit_on_error=False)
     
-    wrapcmd='docker run -it -v "/Users/jyc/project/activeml/AL_ani:/workspace" jychoihpc/activeml bash -c "%s"'
+    #wrapcmd='docker run -it -v "/Users/jyc/project/activeml/AL_ani:/workspace" jychoihpc/activeml bash -c "%s"'
+    wrapcmd='srun -u singularity exec --bind "/lustre/or-scratch/cades-birthright/jyc/activeml/AL_ani:/workspace" --nv /lustre/or-scratch/cades-birthright/jyc/activeml/activeml bash -c "cd /workspace; %s"'
 
     for i in range(restarti,nAC):
         future_list = list()
