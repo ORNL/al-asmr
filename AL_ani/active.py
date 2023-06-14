@@ -122,7 +122,7 @@ if __name__ == "__main__":
         mos.system(com)
 
         for j in range(0,nensem):
-            com="cd %s; ln -snf ../AC%d-train%d train%d"%(dirname, i, j, j)
+            com="cd %s; ln -snf ../train%d-%d train%d"%(dirname, i, j, j)
             mos.system(com)
             com="cd %s; ln -snf train%d/force-training-best.pt best%d.pt"%(dirname, j, j)
             mos.system(com)
