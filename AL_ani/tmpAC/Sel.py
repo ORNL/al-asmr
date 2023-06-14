@@ -6,6 +6,7 @@ import numpy as np
 import numpy.ma as ma
 import random as rand
 import copy
+import argparse
 #import matplotlib.pyplot as plt
 
 from model import Model
@@ -926,8 +927,10 @@ dataname = 'validation'
 CheckHDF5Mol(dataname)
 """
 
-nensem = 3
-if(len(sys.argv)==2):nesem=int(sys.argv[1])
+parser = argparse.ArgumentParser()
+parser.add_argument('nenum',type=int,default=3)
+args = parser.parse_args()
+nensem = args.nenum
 
 #UQ(dataname,3,1000)
 #UQatomic(dataname,5,1000)
