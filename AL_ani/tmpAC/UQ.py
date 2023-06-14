@@ -1343,11 +1343,14 @@ def UQani(filehead,nmodels,sig,cutnum,datanum):
         tdist = Dist(ref_coords[i],9,16)
         pe = exp_en[i].item()
 
-        if(newmask[i]):
-            selout+=str(tdist)+" "+str(pe*0.043) +" "+ str(pe*0.043+1)+"\n"
-            torder.append(tdist)            
-        else:
-            selout+=str(tdist)+" "+str(pe*0.043) +" "+str(pe*0.043)+"\n"        
+        try:
+            if(newmask[i]):
+                selout+=str(tdist)+" "+str(pe*0.043) +" "+ str(pe*0.043+1)+"\n"
+                torder.append(tdist)            
+            else:
+                selout+=str(tdist)+" "+str(pe*0.043) +" "+str(pe*0.043)+"\n"        
+        except:
+            break
 
     fsel=open('iselected.data','w')
     fsel.write(selout)
