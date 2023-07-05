@@ -32,6 +32,7 @@ def run_ensem(i, j, nepoch, pythonbaked):
     import sh
 
     def runpython(cmd, _out=None):
+        print ("execute python:", cmd)
         if os.path.basename(pythonbaked._path) == "python":
             return pythonbaked(cmd.split(), _out=_out, _err_to_out=True)
         else:
@@ -234,10 +235,13 @@ if __name__ == "__main__":
         for j in range(0, nensem):
             future = run_ensem(i, j, args.nepoch, pythonbaked)
             future_list.append(future)
-        try:
-            future.result()
-        except Exception as e:
-            print("ERROR:", e)
+
+        for j in range(0, nensem):
+            try:
+                future_list[j].result()
+            except Exception as e:
+                print("ERROR:", j, e)
+                sys.exit()
 
         future = run_ac(i, sig, nensem, maxnum, nboost, pythonbaked)
         try:
