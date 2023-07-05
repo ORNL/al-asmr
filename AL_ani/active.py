@@ -30,9 +30,11 @@ global pythonbaked
 @python_app
 def run_ensem(i, j, nepoch, pythonbaked):
     import sh
+    import random
+    import time
 
     def runpython(cmd, _out=None):
-        print ("execute python:", cmd)
+        print("execute python:", cmd, file=_out, flush=True)
         if os.path.basename(pythonbaked._path) == "python":
             return pythonbaked(cmd.split(), _out=_out, _err_to_out=True)
         else:
@@ -40,20 +42,30 @@ def run_ensem(i, j, nepoch, pythonbaked):
                 ["bash", "-c", "cd /workspace; %s" % (cmd)], _out=_out, _err_to_out=True
             )
 
-    print("Model Training in Ac %d loop and %d model" % (i, j))
+    h = open("train%d-%d.log" % (i, j), "a")
+    print("Model Training in AC %d loop and %d model" % (i, j), file=h, flush=True)
     dirname = "train%d-%d" % (i, j)
     if os.path.isdir(dirname):
         sh.rm("-rf", dirname)
     sh.cp("-r", "tmptrain", dirname)
 
-    h = open("train%d-%d.log" % (i, j), "a")
     with sh.pushd(dirname):
         sh.ln("-snf", "../DataSplit/tot.h5")
         sh.ln("-snf", "../DataSplit/comdiv.py")
         sh.ln("-snf", "../DataSplit/div.py")
         sh.ln("-snf", "../DataSplit/Ref")
 
-    runpython("cd %s; python comdiv.py %d" % (dirname, i + 1), _out=h)
+    ## Frequent BlockingIOError with parallel running. Try to rerun.
+    while True:
+        try:
+            runpython("cd %s; python comdiv.py %d" % (dirname, i + 1), _out=h)
+            break
+        except:
+            t = random.random() * 10
+            print("error on comdiv.py. Sleep", t, file=h, flush=True)
+            time.sleep(t)
+            continue
+
     runpython(
         "cd %s; python nnp_training_force.py --nepoch=%d" % (dirname, nepoch), _out=h
     )
@@ -142,7 +154,9 @@ if __name__ == "__main__":
     group.add_argument(
         "--singularity", action="store_const", dest="container", const="singularity"
     )
-    group.add_argument("--none", action="store_const", dest="container", const="none")
+    group.add_argument(
+        "--nocontainer", action="store_const", dest="container", const="none"
+    )
     parser.set_defaults(container="docker")
     parser.add_argument("--container_name", default="activeml", help="container name")
     parser.add_argument(
@@ -178,10 +192,8 @@ if __name__ == "__main__":
     # config = Config(
     #     executors=[
     #         HighThroughputExecutor(
-    #             provider=LocalProvider(
-    #                 launcher=SimpleLauncher(debug=True)
-    #             ),
-    #             max_workers=1
+    #             provider=LocalProvider(launcher=SimpleLauncher(debug=True)),
+    #             max_workers=args.num_workers,
     #         )
     #     ]
     # )
