@@ -134,8 +134,25 @@ if __name__ == "__main__":
         "--nepoch", type=int, default=300
     )  ## set nepoch for NNP training
     parser.add_argument("--restarti", type=int, default=0)  ## set initial i (AC#)
-    parser.add_argument("--wrapcmd")  ## set initial i (AC#)
-    # parser.add_argument('--navg',type=int,default=1000) #of data for mean and std
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "--docker", action="store_const", dest="container", const="docker"
+    )
+    group.add_argument(
+        "--singularity", action="store_const", dest="container", const="singularity"
+    )
+    group.add_argument("--none", action="store_const", dest="container", const="none")
+    parser.set_defaults(container="docker")
+    parser.add_argument("--container_name", default="activeml", help="container name")
+    parser.add_argument(
+        "--bind_dir",
+        default=os.path.dirname(__file__),
+        help="directory location to bind",
+    )
+    parser.add_argument(
+        "--num_workers", type=int, default=1, help="number of parallel workers"
+    )
+    parser.add_argument("--debug", action="store_true", help="debug log")
     args = parser.parse_args()
 
     nensem = args.enum
@@ -152,9 +169,10 @@ if __name__ == "__main__":
     print("Value of sigma: ", sig)
     print("# of epochs for training: ", args.nepoch)
 
-    logging.basicConfig(level=logging.INFO)
+    if args.debug:
+        logging.basicConfig(level=logging.INFO)
 
-    config = Config(executors=[ThreadPoolExecutor(max_threads=1)])
+    config = Config(executors=[ThreadPoolExecutor(max_threads=args.num_workers)])
     # config = Config(
     #     executors=[
     #         HighThroughputExecutor(
@@ -178,18 +196,25 @@ if __name__ == "__main__":
         except:
             pass
 
-    wrapcmd = 'docker run -it -v "/Users/jyc/project/activeml/AL_ani:/workspace" jychoihpc/activeml bash -c "%s"'
+    # wrapcmd = 'docker run -it -v "/Users/jyc/project/activeml/AL_ani:/workspace" jychoihpc/activeml bash -c "%s"'
     # wrapcmd='srun -u singularity exec --bind "/lustre/or-scratch/cades-birthright/jyc/activeml/AL_ani:/workspace" --nv /lustre/or-scratch/cades-birthright/jyc/activeml/activeml bash -c "cd /workspace; %s"'
 
-    if wrapcmd is None:
-        pythonbaked = sh.python.bake()
-    else:
+    if args.container == "docker":
         pythonbaked = sh.docker.bake(
             "run",
             "-v",
-            "/Users/jyc/project/activeml/AL_ani:/workspace",
-            "jychoihpc/activeml",
+            "%s:/workspace" % (args.bind_dir),
+            args.container_name,
         )
+    elif args.container == "singularity":
+        pythonbaked = sh.docker.bake(
+            "exec",
+            "--bind",
+            "%s:/workspace" % (args.bind_dir),
+            args.container_name,
+        )
+    else:
+        pythonbaked = sh.python.bake()
 
     for i in range(restarti, nAC):
         future_list = list()
