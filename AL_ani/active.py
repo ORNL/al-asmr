@@ -211,6 +211,7 @@ if __name__ == "__main__":
     elif args.container == "singularity":
         if args.srun:
             pythonbaked = sh.srun.bake(
+                "--ntasks=1",
                 "--gres=gpu:1",
                 "singularity",
                 "exec",
