@@ -153,6 +153,7 @@ if __name__ == "__main__":
         "--num_workers", type=int, default=1, help="number of parallel workers"
     )
     parser.add_argument("--debug", action="store_true", help="debug log")
+    parser.add_argument("--srun", action="store_true", help="use srun")
     args = parser.parse_args()
 
     nensem = args.enum
@@ -207,13 +208,24 @@ if __name__ == "__main__":
             args.container_name,
         )
     elif args.container == "singularity":
-        pythonbaked = sh.singularity.bake(
-            "exec",
-            "--bind",
-            "%s:/workspace" % (args.bind_dir),
-            "--nv",
-            args.container_name,
-        )
+        if args.srun:
+            pythonbaked = sh.srun.bake(
+                "--gres=gpu:1",
+                "singularity",
+                "exec",
+                "--bind",
+                "%s:/workspace" % (args.bind_dir),
+                "--nv",
+                args.container_name,
+            )
+        else:
+            pythonbaked = sh.singularity.bake(
+                "exec",
+                "--bind",
+                "%s:/workspace" % (args.bind_dir),
+                "--nv",
+                args.container_name,
+            )
     else:
         pythonbaked = sh.python.bake()
 
