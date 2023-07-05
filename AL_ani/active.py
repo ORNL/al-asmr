@@ -207,10 +207,11 @@ if __name__ == "__main__":
             args.container_name,
         )
     elif args.container == "singularity":
-        pythonbaked = sh.docker.bake(
+        pythonbaked = sh.singularity.bake(
             "exec",
             "--bind",
             "%s:/workspace" % (args.bind_dir),
+            "--nv",
             args.container_name,
         )
     else:
