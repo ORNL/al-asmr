@@ -225,6 +225,7 @@ if __name__ == "__main__":
             pythonbaked = sh.srun.bake(
                 "--ntasks=1",
                 "--gres=gpu:1",
+                "--overlap",
                 "singularity",
                 "exec",
                 "--bind",
