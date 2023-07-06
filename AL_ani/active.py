@@ -24,23 +24,26 @@ import sh
 
 # export MKL_THREADING_LAYER=1
 # python active.py --enum=5 --ACnum=10 --nboost=3 --sig=3.0 --maxnum=50
-global pythonbaked
+global cmdbaked
 
 
 @python_app
-def run_ensem(i, j, nepoch, pythonbaked):
+def run_ensem(i, j, nepoch, cmdbaked):
     import sh
     import random
     import time
 
-    def runpython(cmd, _out=None):
-        print("execute python:", cmd, file=_out, flush=True)
-        if os.path.basename(pythonbaked._path) == "python":
-            return pythonbaked(cmd.split(), _out=_out, _err_to_out=True)
-        else:
-            return pythonbaked(
+    def runcmd(cmd, _out=None):
+        print("cmd:", cmd, file=_out, flush=True)
+        execname = os.path.basename(cmdbaked._path)
+        if execname == b"python":
+            return cmdbaked(cmd.split(), _out=_out, _err_to_out=True)
+        elif (execname == b"docker") or (execname == b"singularity"):
+            return cmdbaked(
                 ["bash", "-c", "cd /workspace; %s" % (cmd)], _out=_out, _err_to_out=True
             )
+        else:
+            return cmdbaked(cmd, _out=_out, _err_to_out=True)
 
     h = open("train%d-%d.log" % (i, j), "a")
     print("Model Training in AC %d loop and %d model" % (i, j), file=h, flush=True)
@@ -58,7 +61,7 @@ def run_ensem(i, j, nepoch, pythonbaked):
     ## Frequent BlockingIOError with parallel running. Try to rerun.
     while True:
         try:
-            runpython("cd %s; python comdiv.py %d" % (dirname, i + 1), _out=h)
+            runcmd("cd %s; python comdiv.py %d" % (dirname, i + 1), _out=h)
             break
         except:
             t = random.random() * 10
@@ -66,20 +69,21 @@ def run_ensem(i, j, nepoch, pythonbaked):
             time.sleep(t)
             continue
 
-    runpython(
+    runcmd(
         "cd %s; python nnp_training_force.py --nepoch=%d" % (dirname, nepoch), _out=h
     )
 
 
 @python_app
-def run_ac(i, sig, nensem, maxnum, nboost, pythonbaked):
+def run_ac(i, sig, nensem, maxnum, nboost, cmdbaked):
     import sh
 
-    def runpython(cmd, _out=None):
-        if os.path.basename(pythonbaked._path) == "python":
-            return pythonbaked(cmd.split(), _out=_out, _err_to_out=True)
+    def runcmd(cmd, _out=None):
+        print("cmd:", cmd, file=_out, flush=True)
+        if os.path.basename(cmdbaked._path) == "python":
+            return cmdbaked(cmd.split(), _out=_out, _err_to_out=True)
         else:
-            return pythonbaked(
+            return cmdbaked(
                 ["bash", "-c", "cd /workspace; %s" % (cmd)], _out=_out, _err_to_out=True
             )
 
@@ -99,13 +103,13 @@ def run_ac(i, sig, nensem, maxnum, nboost, pythonbaked):
 
     ## Select Best model
     h = open("AC%d.log" % (i), "a")
-    runpython("cd %s; python Sel.py %d" % (dirname, nensem), _out=h)
+    runcmd("cd %s; python Sel.py %d" % (dirname, nensem), _out=h)
 
     ## SMD directory
     with sh.pushd("%s/SMD" % (dirname)):
         sh.cp("../bestbest.pt", "best0.pt")
 
-    runpython("cd %s/SMD; python run.py" % (dirname), _out=h)
+    runcmd("cd %s/SMD; python run.py" % (dirname), _out=h)
 
     with sh.pushd("%s/SMD" % (dirname)):
         sh.cp("vmd.xyz", "../")
@@ -113,15 +117,15 @@ def run_ac(i, sig, nensem, maxnum, nboost, pythonbaked):
         sh.cp("ff.dat", "../../ff%d.dat" % (i))
 
     ## UQ
-    runpython("cd %s; python xyz2h5.py" % (dirname), _out=h)
-    runpython("cd %s; python UQ.py %f %d %d" % (dirname, sig, nensem, maxnum), _out=h)
+    runcmd("cd %s; python xyz2h5.py" % (dirname), _out=h)
+    runcmd("cd %s; python UQ.py %f %d %d" % (dirname, sig, nensem, maxnum), _out=h)
 
     ## Rerun directory
     with sh.pushd("%s/Rerun" % (dirname)):
         sh.cp("../selected.h5", "iselected.h5")
 
-    runpython("cd %s/Rerun; python boost.py %d" % (dirname, nboost), _out=h)
-    runpython("cd %s/Rerun; python rerun.py" % (dirname), _out=h)
+    runcmd("cd %s/Rerun; python boost.py %d" % (dirname, nboost), _out=h)
+    runcmd("cd %s/Rerun; python rerun.py" % (dirname), _out=h)
 
     with sh.pushd("%s/Rerun" % (dirname)):
         sh.cp("data.h5", "../next.h5")
@@ -130,7 +134,7 @@ def run_ac(i, sig, nensem, maxnum, nboost, pythonbaked):
         sh.mkdir("-p", "../DataSplit/%s" % (dirname))
         sh.cp("next.h5", "../DataSplit/%s/" % (dirname))
 
-    runpython("cd %s; python Eval.py data %d" % (dirname, nensem), _out=h)
+    runcmd("cd %s; python Eval.py data %d" % (dirname, nensem), _out=h)
 
 
 if __name__ == "__main__":
@@ -167,7 +171,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_workers", type=int, default=1, help="number of parallel workers"
     )
-    parser.add_argument("--debug", action="store_true", help="debug log")
     parser.add_argument("--srun", action="store_true", help="use srun")
     args = parser.parse_args()
 
@@ -185,8 +188,7 @@ if __name__ == "__main__":
     print("Value of sigma: ", sig)
     print("# of epochs for training: ", args.nepoch)
 
-    if args.debug:
-        logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO)
 
     config = Config(executors=[ThreadPoolExecutor(max_threads=args.num_workers)])
     # config = Config(
@@ -214,7 +216,7 @@ if __name__ == "__main__":
     # wrapcmd='srun -u singularity exec --bind "/lustre/or-scratch/cades-birthright/jyc/activeml/AL_ani:/workspace" --nv /lustre/or-scratch/cades-birthright/jyc/activeml/activeml bash -c "cd /workspace; %s"'
 
     if args.container == "docker":
-        pythonbaked = sh.docker.bake(
+        cmdbaked = sh.docker.bake(
             "run",
             "-v",
             "%s:/workspace" % (args.bind_dir),
@@ -222,7 +224,7 @@ if __name__ == "__main__":
         )
     elif args.container == "singularity":
         if args.srun:
-            pythonbaked = sh.srun.bake(
+            cmdbaked = sh.srun.bake(
                 "--ntasks=1",
                 "--gres=gpu:1",
                 "--overlap",
@@ -234,7 +236,7 @@ if __name__ == "__main__":
                 args.container_name,
             )
         else:
-            pythonbaked = sh.singularity.bake(
+            cmdbaked = sh.singularity.bake(
                 "exec",
                 "--bind",
                 "%s:/workspace" % (args.bind_dir),
@@ -242,12 +244,12 @@ if __name__ == "__main__":
                 args.container_name,
             )
     else:
-        pythonbaked = sh.python.bake()
+        cmdbaked = sh.bash.bake("-c")
 
     for i in range(restarti, nAC):
         future_list = list()
         for j in range(0, nensem):
-            future = run_ensem(i, j, args.nepoch, pythonbaked)
+            future = run_ensem(i, j, args.nepoch, cmdbaked)
             future_list.append(future)
 
         for j in range(0, nensem):
@@ -257,140 +259,10 @@ if __name__ == "__main__":
                 print("ERROR:", j, e)
                 sys.exit()
 
-        future = run_ac(i, sig, nensem, maxnum, nboost, pythonbaked)
+        future = run_ac(i, sig, nensem, maxnum, nboost, cmdbaked)
         try:
             future.result()
         except Exception as e:
             print("ERROR:", e)
 
         sys.exit()
-
-        # Select Best model
-        com = "cd %s; python Sel.py %d" % (dirname, nensem)
-        mos.system(com, wrapcmd=wrapcmd)
-
-        # in the SMD directory
-        com = "cd %s/SMD; cp ../bestbest.pt best0.pt" % (dirname)
-        mos.system(com)
-
-        com = "cd %s/SMD; python run.py" % (dirname)
-        mos.system(com, wrapcmd=wrapcmd)
-
-        com = "cd %s/SMD; cp vmd.xyz ../" % (dirname)
-        mos.system(com)
-
-        com = "cd %s/SMD; cp ff.dat ../" % (dirname)
-        mos.system(com)
-
-        com = "cd %s/SMD; cp ff.dat ../../ff%d.dat" % (dirname, i)
-        mos.system(com)
-
-        # UQ
-        com = "cd %s; python xyz2h5.py" % (dirname)
-        mos.system(com, wrapcmd=wrapcmd)
-
-        com = "cd %s; python UQ.py %f %d %d" % (dirname, sig, nensem, maxnum)
-        mos.system(com, wrapcmd=wrapcmd)
-
-        # in the Rerun directory
-        com = "cd %s/Rerun; cp ../selected.h5 iselected.h5" % (dirname)
-        mos.system(com)
-
-        com = "cd %s/Rerun; boost.py %d" % (dirname, nboost)
-        mos.system(com, wrapcmd=wrapcmd)
-
-        com = "cd %s/Rerun; rerun.py %d" % (dirname, nboost)
-        mos.system(com, wrapcmd=wrapcmd)
-
-        com = "cd %s/Rerun; cp data.h5 ../next.h5" % (dirname)
-        mos.system(com)
-
-        # in the AC directory
-        com = "cd %s; mkdir ../DataSplit/%s" % (dirname, dirname)
-        mos.system(com)
-
-        com = "cd %s; cp next.h5 ../DataSplit/%s/data.h5" % (dirname, dirname)
-        mos.system(com)
-
-        com = "cd %s; python Eval.py data %d" % (dirname, nensem)
-        mos.system(com, wrapcmd=wrapcmd)
-
-    sys.exit()
-
-    for i in range(restarti, nAC):
-        for j in range(0, nensem):
-            mos.system("pwd")
-            print("Model Training in Ac %d loop and %d model" % (i, j))
-            dirname = "../train" + str(j)
-            if os.path.isdir(dirname):
-                com = "rm " + dirname + " -rf"
-                mos.system(com)
-
-            com = "cp ../tmptrain " + dirname + " -rf"
-            mos.system(com)
-
-            com = "python comdiv.py " + str(i + 1)
-            mos.system(com)
-
-            com = "cp *.h5 " + dirname
-            mos.system(com)
-            mos.chdir(dirname)
-            mos.system("pwd")
-            mos.system("python nnp_training_force.py --nepoch=%d" % (args.nepoch))
-            com = "cp force-training-best.pt ../best" + str(j) + ".pt"
-            mos.system(com)
-            mos.chdir("../DataSplit")
-
-        mos.chdir("../")
-        dirname = "AC" + str(i)
-        if os.path.isdir(dirname):
-            com = "rm " + dirname + " -rf"
-            mos.system(com)
-
-        # Active Learning directory
-        com = "cp tmpAC " + dirname + " -rf"
-        mos.system(com)
-
-        mos.chdir(dirname)
-        mos.system("pwd")
-
-        # move all trained values and train directory
-        mos.system("mv ../best*.pt .")
-        mos.system("mv ../train* . ")
-
-        # Select Best model
-        mos.system("python Sel.py " + str(nensem))
-
-        # in the SMD directory
-        mos.chdir("SMD")
-        # mos.system("cp ../best*.pt .")
-        mos.system("cp ../bestbest.pt best0.pt")
-
-        mos.system("python run.py")
-        mos.system("cp vmd.xyz ../")
-        mos.system("cp ff.dat ../")
-        com = "cp ff.dat ../../ff" + str(i) + ".dat"
-        mos.system(com)
-        mos.chdir("../")
-        mos.system("python xyz2h5.py")
-        mos.system(
-            "python UQ.py " + str(sig) + " " + str(nensem) + " " + str(maxnum)
-        )  # selected.h5
-        # mos.system("python UQ.py "+str(sig)+" "+str(nensem)+" "+str(maxnum)) #selected.h5
-
-        # in the Rerun directory
-        mos.chdir("./Rerun")
-        mos.system("cp ../selected.h5 iselected.h5")
-        # mos.system("python boost.py")
-        mos.system("python boost.py " + str(nboost))
-        mos.system("python rerun.py")
-        mos.system("cp data.h5 ../next.h5")
-
-        # in the AC directory
-        mos.chdir("../")
-        com = "mkdir ../DataSplit/" + dirname
-        mos.system(com)
-        com = "cp next.h5 ../DataSplit/" + dirname + "/data.h5"
-        mos.system(com)
-        mos.system("python Eval.py data " + str(nensem))
-        mos.chdir("../DataSplit")
