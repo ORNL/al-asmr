@@ -36,9 +36,14 @@ def run_ensem(i, j, nepoch, cmdbaked):
     def runcmd(cmd, _out=None):
         print("cmd:", cmd, file=_out, flush=True)
         execname = os.path.basename(cmdbaked._path)
-        if execname == b"python":
+        if (execname == b"python") or (execname == "python"):
             return cmdbaked(cmd.split(), _out=_out, _err_to_out=True)
-        elif (execname == b"docker") or (execname == b"singularity"):
+        elif (
+            (execname == b"docker")
+            or (execname == b"singularity")
+            or (execname == "docker")
+            or (execname == "singularity")
+        ):
             return cmdbaked(
                 ["bash", "-c", "cd /workspace; %s" % (cmd)], _out=_out, _err_to_out=True
             )
